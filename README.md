@@ -2,7 +2,7 @@
 
 Opinionated personal development environment configuration.
 
-## Git Configuration Backup
+## Git Configuration Backup
 
 Run the following commands to back up your Git configuration files:
 
