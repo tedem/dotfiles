@@ -39,3 +39,14 @@ This command saves the identifiers of all installed extensions to a text file:
 ```bash
 code --list-extensions > ~/Code/dotfiles/vscode/extensions.txt
 ```
+
+## 📬 Connect with tedem
+
+| Platform  | Handle |
+|-----------|--------|
+| Instagram | [@tedemedet](https://www.instagram.com/tedemedet/) |
+| X         | [@tedemedet](https://x.com/tedemedet) |
+| BlueSky   | [@tedem.dev](https://bsky.app/profile/tedem.dev) |
+| Pinkary   | [@tedem](https://pinkary.com/@tedem) |
+
+End of README.md!
