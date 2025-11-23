@@ -1,23 +1,53 @@
 #!/bin/bash
 
 # -----------------------------------------------------------------------------
-# Project : tedem/dotfiles
-# Author  : tedem
-# Repo    : https://github.com/tedem/dotfiles
-# Purpose : Rapid setup of macOS environment with personal preferred settings.
-# License : MIT (see repository for details)
-# Usage   : ./install.sh
-# Note    : Designed for macOS only.
+# Project: tedem/dotfiles
+# Repository: https://github.com/tedem/dotfiles
+# Author: tedem
+# License: MIT
+# -----------------------------------------------------------------------------
+#
+# DESCRIPTION
+#
+# This script orchestrates the rapid setup and configuration of a new macOS
+# environment based on the preferences defined in the 'tedem/dotfiles' project.
+# It ensures idempotence where possible, skipping steps already completed.
+#
+# EXECUTION FLOW
+#
+# 1. Prerequisite Checks: Validates OS (macOS) and critical applications (e.g., VS Code).
+# 2. System Configuration: Sets custom HostName (Medet-Mac-mini) and suppresses login messages.
+# 3. Core Tools: Installs Xcode Command Line Tools and Homebrew (package manager).
+# 4. Software Installation: Uses 'brew bundle' to install packages, casks, and
+#    applications defined in the associated 'Brewfile' from the repository.
+#
+# USAGE
+#
+# Execute the script locally via the terminal:
+# $ ./install.sh
+#
+# WARNING
+#
+# This script makes administrative changes (requires 'sudo' for HostName) and
+# modifies user profiles (.zprofile). Proceed with caution and review the
+# source code before execution.
+#
 # -----------------------------------------------------------------------------
 
-# Bash strict mode
+# --- BASH STRICT MODE & ERROR HANDLING ---
+# e: exit immediately if a command exits with a non-zero status.
+# u: treat unset variables as an error.
+# o pipefail: sets the exit code of a pipeline to that of the rightmost command
+#             to exit with a non-zero status.
 set -euo pipefail
 
-# Defines
+# --- CONFIGURATION ---
 HEADER=$'\033[1;36m[ tedem/dotfiles ]\033[0m'
 HOSTNAME="Medet-Mac-mini"
 
-# Underline text function
+# --- HELPER FUNCTIONS ---
+
+# Function to underline text.
 underline() {
     printf "\e[4m$1\e[0m"
 }
