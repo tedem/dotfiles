@@ -1,4 +1,4 @@
-# ⚙️ Dotfiles
+# ⚙️ Dotfiles (Work in Progress)
 
 This repository contains preferred configuration files (dotfiles) used to create a standardized and portable development environment.
 
