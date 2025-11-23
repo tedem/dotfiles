@@ -42,6 +42,8 @@ code --list-extensions > ~/Code/dotfiles/vscode/extensions.txt
 
 ## 📬 Connect with tedem
 
+Follow me on these social media platforms:
+
 | Platform  | Handle |
 |-----------|--------|
 | Instagram | [@tedemedet](https://www.instagram.com/tedemedet/) |
