@@ -6,8 +6,6 @@ This repository contains preferred configuration files (dotfiles) used to create
 
 Use the commands below to copy your current local configuration files into this dotfiles directory (backup).
 
-**⚠️ Note on Paths (macOS):** The source paths below are valid for macOS. If you are using Linux or Windows, you will need to replace the path segment `$HOME/Library/Application Support/Code/User/` with the appropriate configuration directory for your operating system (e.g., `~/.config/Code/User/` on Linux).
-
 ### 1. Git Configuration
 
 Run the following command to back up your global Git settings.
