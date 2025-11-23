@@ -2,6 +2,15 @@
 
 Opinionated personal development environment configuration.
 
+## Git Configuration Backup
+
+Run the following commands to back up your Git configuration files:
+
+Global Git Config:
+
+```bash
+cp ~/.gitconfig ~/Code/dotfiles/git/.gitconfig
+```
 
 ## VSCode Configuration Backup
 
