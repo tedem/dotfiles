@@ -9,28 +9,18 @@
 #
 # DESCRIPTION
 #
-# This script orchestrates the rapid setup and configuration of a new macOS
-# environment based on the preferences defined in the 'tedem/dotfiles' project.
-# It ensures idempotence where possible, skipping steps already completed.
-#
-# EXECUTION FLOW
-#
-# 1. Prerequisite Checks: Validates OS (macOS) and critical applications (e.g., VS Code).
-# 2. System Configuration: Sets custom HostName (Medet-Mac-mini) and suppresses login messages.
-# 3. Core Tools: Installs Xcode Command Line Tools and Homebrew (package manager).
-# 4. Software Installation: Uses 'brew bundle' to install packages, casks, and
-#    applications defined in the associated 'Brewfile' from the repository.
+# This script automates the setup and configuration of a macOS environment.
+# It performs prerequisite checks, system configurations, and installs necessary tools.
 #
 # USAGE
 #
-# Execute the script locally via the terminal:
-# $ ./install.sh
+# Execute the script directly from the terminal using:
+# $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tedem/dotfiles/main/install.sh)"
 #
 # WARNING
 #
-# This script makes administrative changes (requires 'sudo' for HostName) and
-# modifies user profiles (.zprofile). Proceed with caution and review the
-# source code before execution.
+# This script will make changes to your system. Review it carefully before proceeding.
+# It may require administrative privileges (sudo) and could potentially alter system settings.
 #
 # -----------------------------------------------------------------------------
 
@@ -41,185 +31,218 @@
 #             to exit with a non-zero status.
 set -euo pipefail
 
-# --- CONFIGURATION ---
-HEADER=$'\033[1;36m[ tedem/dotfiles ]\033[0m'
-HOSTNAME="Medet-Mac-mini"
+# --- STYLING FOR TERMINAL OUTPUT ---
+
+# Define color and style variables if output is a terminal
+if [[ -t 1 ]]; then
+    BOLD=$(printf "\033[1m")
+    AQUA=$(printf "\033[96m")
+    BLUE=$(printf "\033[34m")
+    GREEN=$(printf "\033[32m")
+    RED=$(printf "\033[31m")
+    RESET=$(printf "\033[0m")
+    DIM=$(printf "\033[2m")
+else
+    BOLD=""; AQUA=""; BLUE=""; GREEN=""; RED=""; RESET=""; DIM=""
+fi
+
+# --- GLOBAL VARIABLES ---
+readonly HOSTNAME_TARGET="Medet-Mac-mini"
+readonly VERSION="0.1.0"
 
 # --- HELPER FUNCTIONS ---
 
-# Function to underline text.
-underline() {
-    printf "\e[4m$1\e[0m"
+# Header print function
+header() {
+    echo "=== ${BOLD}${AQUA}tedem/dotfiles${RESET} — macOS Setup Script (v${VERSION}) ==="
 }
 
-# Clear
-clear
-
-# macOS check
-if [[ "$OSTYPE" != darwin* ]]; then
-    printf "%s\n" "$HEADER"
+# Print blank line for readability
+blank() {
     echo ""
-    printf "\033[1;31mThis script can only be run on macOS.\033[0m\n"
-    printf "\033[1;33mAborting installation.\033[0m\n"
-    echo ""
-    exit 1
-fi
+}
 
-# Visual Studio Code check (for configurations)
-# Detect Visual Studio Code installation path
-VS_CODE_PATH=""
-for p in "/Applications/Visual Studio Code.app" \
-         "$HOME/Applications/Visual Studio Code.app" \
-         "/Applications/Visual Studio Code - Insiders.app" \
-         "$HOME/Applications/Visual Studio Code - Insiders.app"
-do
-    if [ -d "$p" ]; then
-        VS_CODE_PATH="$p"
-        break
+# Log message functions
+log() {
+    echo "${BLUE}==>${RESET} $1"
+}
+
+# Indented message function
+indent() {
+    echo "    $1"
+}
+
+# Message function
+message() {
+    echo "$1"
+}
+
+# Success message function
+success() {
+    echo "${GREEN}✓${RESET} $1"
+}
+
+# --- PREREQUISITE CHECKS ---
+
+# Check if the OS is macOS (Darwin)
+check_os_darwin() {
+    if [[ "$OSTYPE" != darwin* ]]; then
+        clear
+        header
+        blank
+        log "ERROR: This script is intended to run on macOS only."
+        blank
+        cat <<'MSG'
+This operating system is not supported by this installation script.
+Please run this script on a macOS system.
+MSG
+        blank
+        exit 1
     fi
-done
+}
 
-if [ ! -d "$VS_CODE_PATH" ]; then
-    printf "%s\n" "$HEADER"
-    echo ""
-    printf "\033[1;31mPlease install Visual Studio Code before proceeding.\033[0m\n"
-    echo ""
-    echo "Install Visual Studio Code and re-run this script."
-    echo "-> $(underline 'https://code.visualstudio.com/download')"
-    echo ""
-    printf "\033[1;33mAborting installation.\033[0m\n"
-    echo ""
-    exit 1
-fi
+# --- USER INTERACTION FUNCTIONS ---
 
-# Welcome message
-printf "%s\n" "$HEADER"
-echo ""
-printf "\033[33mConfiguring macOS with tedem/dotfiles.\033[0m\n"
-echo ""
-printf "• Please ensure you have read the README.md before proceeding.\n"
-printf "• This script will make changes to your system.\n"
-printf "• Proceed with caution and at your own risk.\033[0m\n"
-echo ""
+# Display important notice to the user
+important_notice() {
+    log "IMPORTANT NOTICE:"
+    blank
+    indent "* This script will make changes to your system."
+    indent "* It may require administrative privileges (sudo)."
+    indent "* Please review the script before proceeding."
+    indent "* Backup important data to avoid potential loss."
+    blank
+}
 
-# Prompt for confirmation
-printf "\033[1;32mPress 'Enter' to start the installation.\033[0m\n"
-printf "\033[1;31mPress 'Backspace' to abort.\033[0m\n"
-printf "\n\033[2m[ Waiting for key press... ]\033[0m\n"
-read -rsn1 key
+# Handle user confirmation to proceed
+handle_confirmation() {
+    read -r -p "This script will make changes to your system. Do you want to proceed? (y/n): " response
+    blank
+    case "$response" in
+        [yY][eE][sS]|[yY])
+            clear
+            header
+            blank
+            log "Installation starting..."
+            blank
+            message "You have confirmed to proceed with the installation."
+            message "Please wait while the setup is in progress..."
+            blank
+            ;;
+        *)
+            log "Installation aborted by the user."
+            blank
+            exit 1
+            ;;
+    esac
+}
 
-# Key is not recognized
-if [ "$key" != "" ] && [ "$key" != $'\x7f' ]; then
+# --- STEP 1: HOSTNAME CONFIGURATION ---
+hostname_configuration() {
+    log "STEP 1: Configuring Hostname..."
+    blank
+
+    local current_hostname
+    local current_localhostname
+
+    current_hostname=$(scutil --get HostName)
+    current_localhostname=$(scutil --get LocalHostName)
+
+    if [ "$current_hostname" != "$current_localhostname" ]; then
+        sudo scutil --set HostName "$current_localhostname"
+        success "Hostname updated to match LocalHostName: '$current_localhostname'."
+    else
+        success "Hostname is already set to '$current_localhostname'. No changes needed."
+    fi
+
+    blank
+
+    # Display current names
+    indent "${DIM}ComputerName:    $(scutil --get ComputerName)${RESET}"
+    indent "${DIM}Hostname:        $current_hostname${RESET}"
+    indent "${DIM}LocalHostName:   $current_localhostname${RESET}"
+    indent "${DIM}NetBIOSName:     $(defaults read /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName)${RESET}"
+
+    blank
+}
+
+# --- STEP 2: SUPPRESS LOGIN MESSAGE ---
+suppress_login_message() {
+    log "STEP 2: Suppressing Login Message..."
+    blank
+
+    if [ -f "$HOME/.hushlogin" ]; then
+        success "Login message is already suppressed."
+        blank
+        indent "${DIM}~/.hushlogin${RESET}"
+    else
+        touch "$HOME/.hushlogin"
+        success "Created ~/.hushlogin to suppress login message."
+    fi
+
+    blank
+}
+
+
+# --- STEP 3: INSTALLING XCODE COMMAND LINE TOOLS ---
+install_xcode() {
+    log "STEP 3: Installing Xcode Command Line Tools..."
+    blank
+
+    # Check if Xcode Command Line Tools are already installed
+    if xcode-select -p &>/dev/null; then
+        success "Xcode Command Line Tools are already installed."
+        blank
+        indent "${DIM}$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version)${RESET}"
+    else
+        message "Installing Xcode Command Line Tools. A graphical prompt will appear."
+        xcode-select --install
+        until xcode-select -p &>/dev/null; do
+            sleep 5
+        done
+        blank
+        success "Xcode Command Line Tools installed successfully."
+    fi
+
+    blank
+}
+
+# --- MAIN EXECUTION FLOW ---
+
+# Main function
+main() {
+    # Clear terminal for better readability
     clear
-    printf "%s\n" "$HEADER"
-    echo ""
-    printf "\033[1;31mUnrecognized key pressed. Installation aborted.\033[0m\n"
-    echo ""
-    exit 1
-fi
 
-# Abort installation
-if [ "$key" = $'\x7f' ]; then
-    clear
-    printf "%s\n" "$HEADER"
-    echo ""
-    printf "\033[1;31mInstallation aborted by user.\033[0m\n"
-    echo ""
-    exit 1
-fi
+    # Perform OS check
+    check_os_darwin
 
-# Start installation
-if [ "$key" = "" ]; then
-    clear
-    printf "%s\n" "$HEADER"
-    echo ""
-    printf "\033[1;32m🧨 Starting installation...\033[0m\n"
-    echo ""
-    sleep 1
-fi
+    # Display header
+    header
+    blank
 
-# Set HostName
-printf "\033[1;34mHostName updating...\033[0m\n"
+    # Description of the script
+    cat <<'MSG'
+This script automates the setup and configuration of a macOS environment.
+It performs prerequisite checks, system configurations, and installs necessary tools.
+MSG
+    blank
 
-if [ "$(scutil --get HostName)" != "$HOSTNAME" ]; then
-    sudo scutil --set HostName "$HOSTNAME"
-    printf "\033[1;32mHostName set to '%s' successfully.\033[0m\n" "$HOSTNAME"
-else
-    printf "\033[1;32mHostName is already set to '%s'.\033[0m\n" "$HOSTNAME"
-fi
+    # Display important notice
+    important_notice
 
-# Show LocalHostName
-LOCAL_HOSTNAME=$(scutil --get LocalHostName)
-printf "\033[2mLocalHostName is '%s'.\033[0m\n" "$LOCAL_HOSTNAME"
+    # Handle user confirmation
+    handle_confirmation
 
-# Show ComputerName
-COMPUTER_NAME=$(scutil --get ComputerName)
-printf "\033[2mComputerName is '%s'.\033[0m\n" "$COMPUTER_NAME"
+    # Step 1: Hostname Configuration
+    hostname_configuration
 
-echo ""
+    # Step 2: Suppress Login Message
+    suppress_login_message
 
-# Suppress login messages
-printf "\033[1;34mSuppressing login messages...\033[0m\n"
+    # Step 3: Install Xcode Command Line Tools
+    install_xcode
+}
 
-if [ ! -f "$HOME/.hushlogin" ]; then
-    touch "$HOME/.hushlogin"
-    printf "\033[1;32mLogin messages suppressed successfully.\033[0m\n"
-else
-    printf "\033[1;32mLogin messages are already suppressed.\033[0m\n"
-fi
-
-echo ""
-
-# Install Xcode Command Line Tools if not installed
-printf "\033[1;34mChecking for Xcode Command Line Tools...\033[0m\n"
-
-if ! xcode-select -p &>/dev/null; then
-    printf "\033[1;34mInstalling Xcode Command Line Tools...\033[0m\n"
-    xcode-select --install
-
-    # Wait until the Xcode Command Line Tools are installed
-    until xcode-select -p &>/dev/null; do
-        sleep 5
-    done
-
-    printf "\033[1;32mXcode Command Line Tools installed successfully.\033[0m\n"
-else
-    printf "\033[1;32mXcode Command Line Tools already installed.\033[0m\n"
-fi
-
-echo ""
-
-# Install Homebrew if not installed
-printf "\033[1;34mChecking for Homebrew...\033[0m\n"
-
-if ! command -v brew &>/dev/null; then
-    printf "\033[1;34mInstalling Homebrew...\033[0m\n"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-    # Add Homebrew to PATH
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-
-    printf "\033[1;32mHomebrew installed successfully.\033[0m\n"
-else
-    printf "\033[1;32mHomebrew already installed.\033[0m\n"
-fi
-
-echo ""
-
-# Install partitions from Brewfile
-printf "\033[1;34mInstalling partitions from Brewfile...\033[0m\n"
-BREWFILE_URL="https://raw.githubusercontent.com/tedem/dotfiles/main/Brewfile"
-
-if ! curl -fsI "$BREWFILE_URL" >/dev/null; then
-    printf "\033[1;31mBrewfile URL unreachable. Aborting...\033[0m\n"
-    exit 1
-fi
-
-TMP_BREWFILE="$(mktemp)"
-curl -fsSL "$BREWFILE_URL" -o "$TMP_BREWFILE"
-brew bundle --file="$TMP_BREWFILE"
-rm -f "$TMP_BREWFILE"
-brew cleanup
-printf "\033[1;32mPartitions installed successfully from Brewfile.\033[0m\n"
-echo ""
+# Invoke
+main
