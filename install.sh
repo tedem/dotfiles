@@ -183,7 +183,6 @@ suppress_login_message() {
     blank
 }
 
-
 # --- STEP 3: INSTALLING XCODE COMMAND LINE TOOLS ---
 install_xcode() {
     log "STEP 3: Installing Xcode Command Line Tools..."
