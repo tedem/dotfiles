@@ -47,7 +47,6 @@ else
 fi
 
 # --- GLOBAL VARIABLES ---
-readonly HOSTNAME_TARGET="Medet-Mac-mini"
 readonly VERSION="0.1.0"
 
 # --- HELPER FUNCTIONS ---
