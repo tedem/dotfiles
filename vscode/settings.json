@@ -1,0 +1,92 @@
+{
+    "[blade]": {
+        "editor.defaultFormatter": "shufo.vscode-blade-formatter"
+    },
+    "[markdown]": {
+        "editor.wordWrap": "bounded"
+    },
+    "bladeFormatter.format.noMultipleEmptyLines": true,
+    "bladeFormatter.format.noPhpSyntaxCheck": true,
+    "bladeFormatter.format.sortHtmlAttributes": "idiomatic",
+    "bladeFormatter.format.sortTailwindcssClasses": true,
+    "bladeFormatter.format.wrapLineLength": 120,
+    "bladeFormatter.misc.dontShowNewVersionMessage": true,
+    "breadcrumbs.enabled": false,
+    "chat.extensionUnification.enabled": true,
+    "css.completion.completePropertyWithSemicolon": false,
+    "css.validate": false,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.aiStats.enabled": true,
+    "editor.autoClosingBrackets": "always",
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "editor.colorDecorators": false,
+    "editor.cursorBlinking": "solid",
+    "editor.fontFamily": "JetBrains Mono, Menlo, Monaco, monospace",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 13,
+    "editor.fontWeight": "bold",
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": false,
+    "editor.guides.bracketPairs": false,
+    "editor.guides.indentation": true,
+    "editor.lineHeight": 32,
+    "editor.linkedEditing": true,
+    "editor.matchBrackets": "never",
+    "editor.minimap.enabled": true,
+    "editor.minimap.renderCharacters": false,
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+    "editor.renderControlCharacters": true,
+    "editor.renderLineHighlight": "line",
+    "editor.renderWhitespace": "selection",
+    "editor.rulers": [
+        80,
+        100
+    ],
+    "editor.suggest.preview": true,
+    "editor.suggestSelection": "first",
+    "editor.wordWrap": "on",
+    "emmet.includeLanguages": {
+        "blade": "html"
+    },
+    "emmet.showExpandedAbbreviation": "always",
+    "emmet.showSuggestionsAsSnippets": true,
+    "emmet.triggerExpansionOnTab": true,
+    "explorer.autoReveal": false,
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.decorations.badges": false,
+    "explorer.openEditors.visible": 1,
+    "files.associations": {
+        "*.liquid": "html",
+        "*.tpl": "html",
+        "*.twig": "html"
+    },
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "github.copilot.enable": {
+        "markdown": true
+    },
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "php.suggest.basic": false,
+    "php.validate.enable": true,
+    // Using Laravel Herd for PHP validation
+    "php.validate.executablePath": "/Users/tedem/Library/Application Support/Herd/bin/php",
+    "tailwindCSS.emmetCompletions": true,
+    "tailwindCSS.includeLanguages": {
+        "plaintext": "html"
+    },
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.fontSize": 13,
+    "window.autoDetectColorScheme": true,
+    "window.commandCenter": true,
+    "workbench.fontAliasing": "antialiased",
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.layoutControl.enabled": false,
+    "workbench.preferredDarkColorTheme": "GitHub Dark Default",
+    "workbench.preferredLightColorTheme": "GitHub Light Default",
+    "workbench.startupEditor": "none",
+    "workbench.tree.renderIndentGuides": "none"
+}

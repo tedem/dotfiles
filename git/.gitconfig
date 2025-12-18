@@ -1,0 +1,43 @@
+[user]
+	signingkey = DABB7C54790B8EFD
+	email = hello@tedem.dev
+	name = Medet Erdal
+
+[init]
+	defaultBranch = main
+
+[fetch]
+	prune = true
+
+[commit]
+	gpgsign = true
+
+[tag]
+	gpgSign = true
+
+[core]
+	editor = code --wait
+	whitespace = trailing-space,space-before-tab
+	autocrlf = input
+	ignorecase = false
+
+[gpg]
+	program = gpg
+	format = openpgp
+
+[pull]
+	rebase = true
+
+[push]
+	default = simple
+	followTags = true
+	autoSetupRemote = true
+
+[receive]
+	denyNonFastForwards = true
+
+[merge]
+	ff = only
+
+[diff]
+	renames = true
